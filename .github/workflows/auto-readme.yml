@@ -1,10 +1,11 @@
 name: Auto Readme
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize]
 
 jobs:
   auto-readme:
+    if: ${{ !contains( github.event.pull_request.labels.*.name, 'auto-readme-disabled') }}
     runs-on: ubuntu-latest
     container: cloudposse/build-harness:latest
     steps:
@@ -15,11 +16,11 @@ jobs:
     # However, using a personal access token will cause events to be triggered.
     # We need that to ensure a status gets posted after the auto-format commit.
     # We also want to trigger tests if the auto-format made no changes.
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       if: github.event.pull_request.state == 'open'
       name: Privileged Checkout
       with:
-        token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
         repository: ${{ github.event.pull_request.head.repo.full_name }}
         # Check out the PR commit, not the merge commit
         # Use `ref` instead of `sha` to enable pushing back to `ref`
@@ -30,7 +31,7 @@ jobs:
       if: github.event.pull_request.state == 'open'
       shell: bash
       env:
-        GITHUB_TOKEN: "${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}"
+        GITHUB_TOKEN: "${{ secrets.REPO_ACCESS_TOKEN }}"
       run: make BUILD_HARNESS_PATH=/build-harness PACKAGES_PREFER_HOST=true -f /build-harness/templates/Makefile.build-harness pr/readme/host
 
     # Commit changes (if any) to the PR branch
@@ -54,10 +55,10 @@ jobs:
           [[ $SENDER ==  "cloudpossebot" ]] || git push
           # Set status to fail, because the push should trigger another status check,
           # and we use success to indicate the checks are finished.
-          printf "::set-output name=%s::%s\n" "changed" "true"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
           exit 1
         else
-          printf "::set-output name=%s::%s\n" "changed" "false"
+          echo "changed=false" >> "$GITHUB_OUTPUT"
           echo "No changes detected"
         fi
 

@@ -1,4 +1,5 @@
-FROM golang:1.19.0-alpine3.16
+FROM golang:1.21.7-alpine3.18
+
 LABEL maintainer="Cloud Posse <hello@cloudposse.com>"
 
 LABEL "com.github.actions.name"="Build Harness"
@@ -8,9 +9,11 @@ LABEL "com.github.actions.color"="blue"
 
 RUN apk --update --no-cache add \
       bash \
+      build-base \
       ca-certificates \
       coreutils \
       curl \
+      unzip \
       git \
       gettext \
       go \
@@ -26,13 +29,13 @@ RUN apk --update --no-cache add \
       py3-cffi && \
     python3 -m pip install --upgrade pip setuptools wheel && \
     pip3 install --no-cache-dir \
-      cryptography==37.0.4 \
-      PyYAML==5.4.1 \
-      awscli==1.25.43 \
+      cryptography==41.0.7 \
+      PyYAML==6.0.1 \
+      awscli==1.32.23 \
       boto==2.49.0 \
-      boto3==1.24.43 \
-      iteration-utilities==0.11.0 \
-      PyGithub==1.55 && \
+      boto3==1.34.23 \
+      iteration-utilities==0.12.0 \
+      PyGithub==1.59.1 && \
     git config --global advice.detachedHead false
 
 # Install pre-commit support
@@ -73,9 +76,20 @@ RUN apk --update --no-cache add \
 
 # Use Terraform 1 by default
 ARG DEFAULT_TERRAFORM_VERSION=1
-RUN update-alternatives --set terraform /usr/share/terraform/$DEFAULT_TERRAFORM_VERSION/bin/terraform && \
-  mkdir -p /build-harness/vendor && \
-  cp -p /usr/share/terraform/$DEFAULT_TERRAFORM_VERSION/bin/terraform /build-harness/vendor/terraform
+RUN update-alternatives --set terraform /usr/share/terraform/$DEFAULT_TERRAFORM_VERSION/bin/terraform
+
+# Install tflint
+RUN curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+
+COPY <<EOF /root/.tflint.hcl
+plugin "aws" {
+    enabled = true
+    version = "0.26.0"
+    source  = "github.com/terraform-linters/tflint-ruleset-aws"
+}
+EOF
+
+RUN tflint --init
 
 # Patch for old Makefiles that expect a directory like x.x from the 0.x days.
 # Fortunately, they only look for the current version, so we only need links
@@ -86,14 +100,16 @@ RUN v=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r 
 
 COPY ./ /build-harness/
 
-ENV INSTALL_PATH /usr/local/bin
+# Set PACKAGES_PREFER_HOST=true to prevent the build-harness from installing packages
+# from the cloudposse/packages repository as part of the Docker image build process.
+# Any needed packages should be installed in the Dockerfile above here instead.
+ENV PACKAGES_PREFER_HOST=true
 
 WORKDIR /build-harness
 
-ARG PACKAGES_PREFER_HOST=true
 RUN make -s bash/lint make/lint
 RUN make -s template/deps readme/deps
-RUN make -s go/deps-build go/deps-dev
+RUN make -s go/deps-dev
 
 ENTRYPOINT ["/usr/bin/make"]
 #ENTRYPOINT ["/bin/sh"]

@@ -4,7 +4,7 @@
 #
 
 # Name of this project
-name: Build Harness
+name: 🧗 Build Harness
 
 # Logo for this project
 #logo: docs/logo.png
@@ -16,7 +16,7 @@ license: "APACHE2"
 copyrights:
   - name: "Cloud Posse, LLC"
     url: "https://cloudposse.com"
-    year: "2016-2022"
+    year: "2016"
 
 # Canonical GitHub repo
 github_repo: cloudposse/build-harness
@@ -24,25 +24,25 @@ github_repo: cloudposse/build-harness
 # Badges to display
 badges:
   - name: "Build Status"
-    image: "https://github.com/cloudposse/build-harness/workflows/docker/badge.svg?branch=master"
-    url: "https://github.com/cloudposse/build-harness/actions?query=workflow%3Adocker"
+    image: "https://img.shields.io/github/actions/workflow/status/cloudposse/build-harness/docker.yml?style=for-the-badge"
+    url: "https://github.com/cloudposse/build-harness/actions/workflows/docker.yml"
   - name: "Latest Release"
-    image: "https://img.shields.io/github/release/cloudposse/build-harness.svg"
+    image: "https://img.shields.io/github/release/cloudposse/build-harness.svg?style=for-the-badge"
     url: "https://github.com/cloudposse/build-harness/releases/latest"
+  - name: "Last Updated"
+    image: https://img.shields.io/github/last-commit/cloudposse/build-harness/master?style=for-the-badge
+    url: https://github.com/cloudposse/build-harness/commits/master/
   - name: "Slack Community"
-    image: "https://slack.cloudposse.com/badge.svg"
+    image: "https://slack.cloudposse.com/for-the-badge.svg"
     url: "https://slack.cloudposse.com"
-  - name: "Discourse Forum"
-    image: "https://img.shields.io/discourse/https/ask.sweetops.com/posts.svg"
-    url: "https://ask.sweetops.com/"
 
 related:
   - name: "Packages"
     description: "Cloud Posse installer and distribution of native apps"
     url: "https://github.com/cloudposse/packages"
-  - name: "Dev Harness"
-    description: "Cloud Posse Local Development Harness"
-    url: "https://github.com/cloudposse/dev"
+  - name: "Atmos"
+    description: "DevOps Automation Tool"
+    url: "https://github.com/cloudposse/atmos"
 
 # References
 references:
@@ -54,33 +54,34 @@ references:
 screenshots:
   - name: "demo"
     description: "Example of using the `build-harness` to build a docker image"
-    url: "https://cdn.rawgit.com/cloudposse/build-harness/master/docs/demo.svg"
+    url: "docs/demo.gif?raw=true"
 
 # Short description of this project
 description: |-
-  This `build-harness` is a collection of Makefiles to facilitate building Golang projects, Dockerfiles, Helm charts, and more.
-  It's designed to work with CI/CD systems such as GitHub Actions, Codefresh, Travis CI, CircleCI and Jenkins.
+  This `build-harness` is a collection of Makefiles to facilitate building READMEs, Golang projects, Dockerfiles, Helm charts, and more.
+  It's designed to work with CI/CD systems such as GitHub Actions.
   
-  ## Regarding the phase out of `git.io`
-
-  Prior to April 25, 2022, practically all Cloud Posse Makefiles pulled in a common Makefile via
-  ```bash
-  curl -sSL -o .build-harness "https://git.io/build-harness"
-  ```
-  
-  The `git.io` service is a link shortener/redirector provided by GitHub, but [they no longer support it](https://github.blog/changelog/2022-04-25-git-io-deprecation/).
-  We have therefore set up `https://cloudposse.tools/build-harness` as an alternative and are migrating
-  all our Makefiles to use that URL instead. We encourage you to update any references you have in your
-  own code derived from our code, whether by forking one of our repos or simply following one of our examples.
-  
-  Full details are available in our [`git.io` deprecation documentation](docs/git-io-deprecation.md).
-
 # Introduction to the project
 #introduction: |-
 #  This is an introduction.
 
 # How to use this project
 usage: |-
+
+  > [!IMPORTANT]
+  > **Regarding the phase out of `git.io`**
+  > Prior to April 25, 2022, practically all Cloud Posse Makefiles pulled in a common Makefile via
+  > ```bash
+  > curl -sSL -o .build-harness "https://git.io/build-harness"
+  > ```
+  > 
+  > The `git.io` service is a link shortener/redirector provided by GitHub, but [they no longer support it](https://github.blog/changelog/2022-04-25-git-io-deprecation/).
+  > We have therefore set up `https://cloudposse.tools/build-harness` as an alternative and are migrating
+  > all our Makefiles to use that URL instead. We encourage you to update any references you have in your
+  > own code derived from our code, whether by forking one of our repos or simply following one of our examples.
+  > 
+  > Full details are available in our [`git.io` deprecation documentation](docs/git-io-deprecation.md).
+
   At the top of your `Makefile` add, the following...
 
   ```make
@@ -118,10 +119,7 @@ usage: |-
 
 # Example usage
 examples: |-
-  Here are some real world examples:
-  - [`github-authorized-keys`](https://github.com/cloudposse/github-authorized-keys/) - A Golang project that leverages `docker/%`, `go/%`, `travis/%` targets
-  - [`charts`](https://github.com/cloudposse/charts/) - A collection of Helm Charts that leverages `docker/%` and `helm/%` targets
-  - [`bastion`](https://github.com/cloudposse/bastion/) - A docker image that leverages `docker/%` and `bash/lint` targets
+  Here is a real world example:
   - [`terraform-null-label`](https://github.com/cloudposse/terraform-null-label/) - A terraform module that leverages `terraform/%` targets
 
 # How to get started quickly
@@ -136,21 +134,6 @@ include:
   - "docs/targets.md"
   - "docs/extensions.md"
   - "docs/auto-init.md"
-  - "docs/git-io-deprecation.md"
 
-# Contributors to this project
-contributors:
-  - name: "Erik Osterman"
-    github: "osterman"
-  - name: "Igor Rodionov"
-    github: "goruha"
-  - name: "Andriy Knysh"
-    github: "aknysh"
-  - name: "Sarkis"
-    github: "sarkis"
-  - name: "Alexander Babai"
-    github: "alebabai"
-  - name: "Jon Boulle"
-    github: "jonboulle"
-  - name: "Marcin Brański"
-    github: "3h4x"
+# Include contributors to this project
+contributors: []
